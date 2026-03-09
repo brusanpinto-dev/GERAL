@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descubra o plano de saúde ideal para você</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:#fff;
+  color:#111;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.quiz-container{
+  width:100%;
+  max-width:600px;
+  padding:40px 24px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.progress-bar{
+  width:100%;
+  height:4px;
+  background:#eee;
+  border-radius:4px;
+  margin-bottom:60px;
+  position:fixed;
+  top:0;left:0;
+  z-index:10;
+}
+.progress-fill{
+  height:100%;
+  background:#111;
+  border-radius:4px;
+  transition:width 0.4s ease;
+}
+.step-count{
+  position:fixed;
+  top:14px;
+  right:24px;
+  font-size:13px;
+  color:#999;
+  z-index:10;
+}
+
+.screen{
+  display:none;
+  animation:fadeIn 0.4s ease;
+}
+.screen.active{
+  display:block;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.intro h1{
+  font-size:clamp(36px,8vw,56px);
+  font-weight:600;
+  letter-spacing:-2px;
+  line-height:1.1;
+  margin-bottom:16px;
+}
+.intro p{
+  font-size:20px;
+  color:#666;
+  margin-bottom:40px;
+  line-height:1.5;
+}
+.intro .tag{
+  display:inline-block;
+  background:#f5f5f5;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  color:#888;
+  margin-bottom:24px;
+}
+
+.question-title{
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:-1px;
+  margin-bottom:8px;
+  line-height:1.3;
+}
+.question-subtitle{
+  font-size:16px;
+  color:#888;
+  margin-bottom:32px;
+}
+.options{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.option{
+  padding:18px 22px;
+  border:1.5px solid #e0e0e0;
+  border-radius:14px;
+  font-size:17px;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  background:white;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.option:hover{
+  border-color:#111;
+  background:#fafafa;
+}
+.option.selected{
+  border-color:#111;
+  background:#111;
+  color:white;
+}
+.option-icon{
+  font-size:20px;
+  flex-shrink:0;
+}
+
+.lead-form h2{
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:-1px;
+  margin-bottom:6px;
+}
+.lead-form .subtitle{
+  font-size:16px;
+  color:#888;
+  margin-bottom:32px;
+}
+.field{
+  margin-bottom:18px;
+  text-align:left;
+}
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:500;
+  color:#888;
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.field input{
+  width:100%;
+  padding:16px 18px;
+  border:1.5px solid #e0e0e0;
+  border-radius:12px;
+  font-size:17px;
+  font-family:inherit;
+  outline:none;
+  transition:border 0.2s;
+}
+.field input:focus{
+  border-color:#111;
+}
+.field-hidden{
+  display:none;
+}
+
+.btn-primary{
+  display:block;
+  width:100%;
+  padding:18px;
+  background:#111;
+  color:white;
+  border:none;
+  border-radius:40px;
+  font-size:18px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-family:inherit;
+  margin-top:24px;
+}
+.btn-primary:hover{
+  background:#333;
+  transform:scale(1.02);
+}
+.btn-primary:disabled{
+  background:#ccc;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.result h2{
+  font-size:32px;
+  font-weight:600;
+  letter-spacing:-1px;
+  margin-bottom:8px;
+}
+.result .subtitle{
+  color:#888;
+  font-size:16px;
+  margin-bottom:32px;
+}
+.result-card{
+  background:#f8f8f8;
+  border-radius:16px;
+  padding:28px 24px;
+  text-align:left;
+  margin-bottom:24px;
+}
+.result-card h3{
+  font-size:18px;
+  margin-bottom:16px;
+  color:#111;
+}
+.result-item{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  font-size:15px;
+}
+.result-item:last-child{border:none}
+.result-item .label{color:#888}
+.result-item .value{font-weight:500;text-align:right;max-width:60%}
+
+.btn-whatsapp{
+  display:block;
+  width:100%;
+  padding:18px;
+  background:#25D366;
+  color:white;
+  border:none;
+  border-radius:40px;
+  font-size:18px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-family:inherit;
+  text-decoration:none;
+  text-align:center;
+}
+.btn-whatsapp:hover{
+  background:#1da851;
+  transform:scale(1.02);
+}
+
+.privacy{
+  font-size:12px;
+  color:#bbb;
+  margin-top:16px;
+  line-height:1.4;
+}
+
+@media(max-width:500px){
+  .quiz-container{padding:30px 18px}
+  .question-title{font-size:24px}
+  .option{padding:15px 18px;font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="step-count" id="stepCount"></span>
+
+  <!-- INTRO -->
+  <div class="screen active" id="intro">
+    <div class="intro">
+      <div class="tag">Leva menos de 1 minuto</div>
+      <h1>Descubra o plano de saúde ideal para você</h1>
+      <p>Descubra o plano com melhor custo benefício, com hospitais que você não abre mão.</p>
+      <button class="btn-primary" onclick="startQuiz()">Quero descobrir</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS (geradas por JS) -->
+  <div class="screen" id="questionScreen">
+    <p class="question-title" id="questionTitle"></p>
+    <p class="question-subtitle" id="questionSubtitle"></p>
+    <div class="options" id="optionsContainer"></div>
+  </div>
+
+  <!-- LEAD FORM -->
+  <div class="screen" id="leadForm">
+    <div class="lead-form">
+      <h2>Quase lá!</h2>
+      <p class="subtitle">Preencha seus dados para receber sua análise personalizada.</p>
+      <form id="diagForm">
+        <div class="field">
+          <label>Seu nome</label>
+          <input type="text" name="nome" id="leadNome" placeholder="Ex: Maria Silva" required>
+        </div>
+        <div class="field" id="fieldPlano">
+          <label>Plano de saúde atual</label>
+          <input type="text" name="plano" id="leadPlano" placeholder="Ex: Amil, Unimed, SulAmérica...">
+        </div>
+        <div class="field">
+          <label>Idade das pessoas</label>
+          <input type="text" name="idades" id="leadIdades" placeholder="Ex: 45, 50, 32..." required>
+        </div>
+        <div class="field">
+          <label>WhatsApp</label>
+          <input type="tel" name="whatsapp" id="leadWhatsapp" placeholder="(21) 99999-9999" required>
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" name="email" id="leadEmail" placeholder="maria@email.com" required>
+        </div>
+        <div class="field" id="fieldCnpj">
+          <label>CNPJ</label>
+          <input type="text" name="cnpj" id="leadCnpj" placeholder="00.000.000/0000-00">
+        </div>
+        <button type="submit" class="btn-primary">Ver minha análise</button>
+        <p class="privacy">Seus dados estão seguros. Não compartilhamos com terceiros.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="resultScreen">
+    <div class="result">
+      <h2>Sua análise está pronta</h2>
+      <p class="subtitle">Veja o resumo e fale com nossa especialista.</p>
+      <div class="result-card" id="resultCard"></div>
+      <a class="btn-whatsapp" id="whatsappLink" href="#" target="_blank">
+        Falar com especialista no WhatsApp
+      </a>
+      <p class="privacy">Bruna vai analisar seu perfil e enviar as melhores opções.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURACAO DO QUIZ
+   ============================================================ */
+
+const SEU_WHATSAPP = "5521965950086";
+
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzncjw5rMSBnuZTef7Gk9qZXBO7uuKZwjHzXnwF2cjyXrgQAnGoy4Nn-ZV0DWf7GgFI/exec";
+
+/* ============================================================
+   PERGUNTAS
+   - condicao: funcao que recebe as respostas anteriores e
+     retorna true/false. Se false, a pergunta e pulada.
+   ============================================================ */
+
+const PERGUNTAS = [
+  {
+    id: "cnpj",
+    titulo: "Tem CNPJ?",
+    subtitulo: "Isso define o tipo de contratação",
+    opcoes: [
+      { icone: "❌", texto: "Não" },
+      { icone: "🏢", texto: "Tenho" },
+      { icone: "📋", texto: "Sou MEI" },
+    ],
+    condicao: null
+  },
+  {
+    id: "vidas",
+    titulo: "O plano é para quantas pessoas?",
+    subtitulo: "Quantidade de beneficiários",
+    opcoes: [
+      { icone: "👤", texto: "Somente eu" },
+      { icone: "👥", texto: "2 a 5 vidas" },
+      { icone: "👨‍👩‍👧‍👦", texto: "5 a 10 vidas" },
+      { icone: "🏢", texto: "+10 vidas" },
+    ],
+    condicao: null
+  },
+  {
+    id: "tem_plano",
+    titulo: "Tem plano atualmente?",
+    subtitulo: "Entender seu cenário atual ajuda na recomendação",
+    opcoes: [
+      { icone: "✅", texto: "Sim" },
+      { icone: "❌", texto: "Não" },
+    ],
+    condicao: null
+  },
+  {
+    id: "busca",
+    titulo: "O que busca em um plano de saúde atualmente?",
+    subtitulo: "Selecione sua prioridade principal",
+    opcoes: [
+      { icone: "🏥", texto: "Rede maior e de melhor qualidade" },
+      { icone: "🎯", texto: "Hospital específico" },
+      { icone: "💰", texto: "Diminuir o custo" },
+      { icone: "🆕", texto: "Contratar plano pela primeira vez" },
+      { icone: "⚡", texto: "Trocar de operadora com urgência" },
+    ],
+    condicao: null
+  },
+  {
+    id: "regiao",
+    titulo: "Qual região do RJ você mora?",
+    subtitulo: "A rede credenciada varia por região",
+    opcoes: [
+      { icone: "🌆", texto: "Baixada Fluminense" },
+      { icone: "🏖️", texto: "Zona Sul" },
+      { icone: "🌄", texto: "Zona Oeste" },
+      { icone: "🏙️", texto: "Zona Norte" },
+      { icone: "🌿", texto: "Interior do estado ou Região dos Lagos" },
+    ],
+    condicao: null
+  },
+  {
+    id: "incomoda",
+    titulo: "O que mais te incomoda no plano atual?",
+    subtitulo: "Selecione o principal problema",
+    opcoes: [
+      { icone: "📈", texto: "Reajuste alto" },
+      { icone: "🚫", texto: "Rede limitada" },
+      { icone: "🏥", texto: "Hospital que eu quero não atende" },
+      { icone: "😤", texto: "Atendimento ruim" },
+      { icone: "⏳", texto: "Demora na autorização" },
+    ],
+    // So aparece se tem plano atualmente
+    condicao: function(respostas) {
+      var r = respostas.find(function(r) { return r.id === "tem_plano"; });
+      return r && r.resposta === "Sim";
+    }
+  },
+];
+
+/* ============================================================
+   FIM DA CONFIGURACAO — Nao precisa alterar nada abaixo
+   ============================================================ */
+
+let currentIndex = 0;
+const respostas = [];
+let perguntasAtivas = [];
+let totalSteps = 0;
+
+function getPerguntasAtivas() {
+  const ativas = [];
+  for (let i = 0; i < PERGUNTAS.length; i++) {
+    const p = PERGUNTAS[i];
+    if (!p.condicao || p.condicao(respostas)) {
+      ativas.push(p);
+    }
+  }
+  return ativas;
+}
+
+function updateProgress() {
+  // Recalcular perguntas ativas a cada passo
+  perguntasAtivas = getPerguntasAtivas();
+  totalSteps = perguntasAtivas.length + 2;
+  const stepAtual = respostas.length + 1;
+  const pct = (stepAtual / totalSteps) * 100;
+  document.getElementById("progressFill").style.width = pct + "%";
+  if (currentIndex < PERGUNTAS.length && respostas.length < perguntasAtivas.length) {
+    document.getElementById("stepCount").textContent = respostas.length + 1 + " de " + perguntasAtivas.length;
+  } else {
+    document.getElementById("stepCount").textContent = "";
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(function(s) { s.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startQuiz() {
+  currentIndex = 0;
+  avancar();
+}
+
+function avancar() {
+  // Pular perguntas cuja condicao nao e atendida
+  while (currentIndex < PERGUNTAS.length) {
+    const p = PERGUNTAS[currentIndex];
+    if (!p.condicao || p.condicao(respostas)) {
+      break;
+    }
+    currentIndex++;
+  }
+
+  if (currentIndex >= PERGUNTAS.length) {
+    mostrarFormulario();
+    return;
+  }
+
+  renderQuestion(PERGUNTAS[currentIndex]);
+  showScreen("questionScreen");
+  updateProgress();
+}
+
+function renderQuestion(q) {
+  document.getElementById("questionTitle").textContent = q.titulo;
+  document.getElementById("questionSubtitle").textContent = q.subtitulo;
+
+  const container = document.getElementById("optionsContainer");
+  container.innerHTML = "";
+
+  q.opcoes.forEach(function(opt) {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.innerHTML = '<span class="option-icon">' + opt.icone + '</span>' + opt.texto;
+    div.onclick = function() { selectOption(div, opt.texto, q); };
+    container.appendChild(div);
+  });
+}
+
+function selectOption(el, texto, pergunta) {
+  document.querySelectorAll(".option").forEach(function(o) { o.classList.remove("selected"); });
+  el.classList.add("selected");
+
+  // Salvar ou atualizar resposta
+  const existente = respostas.find(function(r) { return r.id === pergunta.id; });
+  if (existente) {
+    existente.resposta = texto;
+  } else {
+    respostas.push({ id: pergunta.id, pergunta: pergunta.titulo, resposta: texto });
+  }
+
+  setTimeout(function() {
+    currentIndex++;
+    avancar();
+  }, 300);
+}
+
+function mostrarFormulario() {
+  // Mostrar/esconder campos condicionais
+  const temCnpj = respostas.find(function(r) { return r.id === "cnpj"; });
+  const temPlano = respostas.find(function(r) { return r.id === "tem_plano"; });
+
+  const mostrarCnpj = temCnpj && (temCnpj.resposta === "Tenho" || temCnpj.resposta === "Sou MEI");
+  const mostrarPlano = temPlano && temPlano.resposta === "Sim";
+
+  document.getElementById("fieldCnpj").style.display = mostrarCnpj ? "block" : "none";
+  document.getElementById("fieldPlano").style.display = mostrarPlano ? "block" : "none";
+
+  if (mostrarCnpj) {
+    document.getElementById("leadCnpj").setAttribute("required", "");
+  } else {
+    document.getElementById("leadCnpj").removeAttribute("required");
+    document.getElementById("leadCnpj").value = "";
+  }
+
+  if (mostrarPlano) {
+    document.getElementById("leadPlano").setAttribute("required", "");
+  } else {
+    document.getElementById("leadPlano").removeAttribute("required");
+    document.getElementById("leadPlano").value = "";
+  }
+
+  showScreen("leadForm");
+  updateProgress();
+}
+
+// Mascara WhatsApp
+document.getElementById("leadWhatsapp").addEventListener("input", function(e) {
+  var v = e.target.value.replace(/\D/g, "");
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 7) v = "(" + v.slice(0,2) + ") " + v.slice(2,7) + "-" + v.slice(7);
+  else if (v.length > 2) v = "(" + v.slice(0,2) + ") " + v.slice(2);
+  e.target.value = v;
+});
+
+// Mascara CNPJ
+document.getElementById("leadCnpj").addEventListener("input", function(e) {
+  var v = e.target.value.replace(/\D/g, "");
+  if (v.length > 14) v = v.slice(0, 14);
+  if (v.length > 12) v = v.slice(0,2) + "." + v.slice(2,5) + "." + v.slice(5,8) + "/" + v.slice(8,12) + "-" + v.slice(12);
+  else if (v.length > 8) v = v.slice(0,2) + "." + v.slice(2,5) + "." + v.slice(5,8) + "/" + v.slice(8);
+  else if (v.length > 5) v = v.slice(0,2) + "." + v.slice(2,5) + "." + v.slice(5);
+  else if (v.length > 2) v = v.slice(0,2) + "." + v.slice(2);
+  e.target.value = v;
+});
+
+// Submit form
+document.getElementById("diagForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  var nome = document.getElementById("leadNome").value.trim();
+  var plano = document.getElementById("leadPlano").value.trim();
+  var idades = document.getElementById("leadIdades").value.trim();
+  var whatsapp = document.getElementById("leadWhatsapp").value.trim();
+  var email = document.getElementById("leadEmail").value.trim();
+  var cnpj = document.getElementById("leadCnpj").value.trim();
+
+  // Montar resumo das respostas
+  var resumoArr = respostas.map(function(r, i) {
+    return (i + 1) + ". " + r.pergunta + "\n   → " + r.resposta;
+  });
+  var resumoText = resumoArr.join("\n\n");
+
+  // Salvar no Google Sheets
+  if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== "COLE_SUA_URL_AQUI") {
+    var dados = {
+      data: new Date().toLocaleString("pt-BR"),
+      nome: nome,
+      idades: idades,
+      whatsapp: whatsapp,
+      email: email,
+      cnpj: cnpj || "—",
+      plano: plano || "—",
+      respostas: resumoText
+    };
+    var param = encodeURIComponent(JSON.stringify(dados));
+    fetch(GOOGLE_SCRIPT_URL + "?data=" + param, { mode: "no-cors" }).catch(function() {});
+  }
+
+  // Montar card de resultado
+  var card = document.getElementById("resultCard");
+  var html = '<h3>Resumo da sua análise</h3>';
+  respostas.forEach(function(r) {
+    html += '<div class="result-item"><span class="label">' + r.pergunta.replace(/\?/g,"") + '</span><span class="value">' + r.resposta + '</span></div>';
+  });
+  if (plano) html += '<div class="result-item"><span class="label">Plano atual</span><span class="value">' + plano + '</span></div>';
+  if (cnpj) html += '<div class="result-item"><span class="label">CNPJ</span><span class="value">' + cnpj + '</span></div>';
+  html += '<div class="result-item"><span class="label">Contato</span><span class="value">' + nome + '</span></div>';
+  card.innerHTML = html;
+
+  // Montar link WhatsApp
+  var msg = "🏥 *NOVO LEAD — Plano de Saúde*\n\n"
+    + "👤 *Nome:* " + nome + "\n"
+    + "📱 *WhatsApp:* " + whatsapp + "\n"
+    + "📧 *E-mail:* " + email + "\n"
+    + "🎂 *Idades:* " + idades + "\n";
+  if (cnpj) msg += "🏢 *CNPJ:* " + cnpj + "\n";
+  if (plano) msg += "📋 *Plano atual:* " + plano + "\n";
+  msg += "\n📋 *Respostas do Quiz:*\n\n"
+    + resumoText + "\n\n"
+    + "---\n"
+    + "Enviado pelo diagnóstico online";
+
+  document.getElementById("whatsappLink").href = "https://api.whatsapp.com/send?phone=" + SEU_WHATSAPP + "&text=" + encodeURIComponent(msg);
+
+  showScreen("resultScreen");
+  updateProgress();
+});
+
+updateProgress();
+</script>
+
+</body>
+</html>
